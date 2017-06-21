@@ -2,6 +2,10 @@ Telegram bot to watch your trades on Poloniex.
 
 This is Python 2 Script 
 
+Example of screen is here:
+https://prnt.sc/fmefvh
+
+
 1. download and install python 2.7:
 tick "Add python to PATH" !!
 
