@@ -25,8 +25,15 @@ In telegb.py:
 
 Generate new API from polo, change pkey/spkey
 
-Change "TG_BOT_TOKEN" to your telegram bot token that you got from BotFather. (Talk to @BotFather and type "/newbot" to create a bot.
-answer the questions by typing answers and pressing enter)
+Change "TG_BOT_TOKEN" to your telegram bot token that you got from BotFather:
+
+Talk to @BotFather and type "/newbot" to create a bot.
+
+answer the questions by typing answers and pressing enter
+
+then type in chat your bot's name (for ex. @gb-to-telegram)
+
+and press start button
 
 Change "TG_ID" to your telegram chat id (to find it out send command "/my_id" to telegram user @get_id_bot)
 
