@@ -27,9 +27,13 @@ answer the questions by typing answers and pressing enter)
 Change "TG_ID" to your telegram chat id (to find it out send command "/my_id" to telegram user @get_id_bot)
 
 RUN:
+
 python telegb.py
 
 #it worked for you, you use and like it = donate any amount you wish
 
 #BTC: 1HRjjHByNL2enV1eRR1RkN698tucecL6FA
 
+I welcome ideas, additions ....
+
+My telegram is @Dyvosvit
