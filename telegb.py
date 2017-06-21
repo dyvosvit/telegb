@@ -18,6 +18,7 @@ TG_BOT_TOKEN = ''
 TG_ID = ''
 
 
+
 import threading
 import os
 import telegram
@@ -176,12 +177,11 @@ while (True):
     print('Showing latest ',latestTrades,' trades')
     balance = testapi.returnBalances()
     if balance != '':
-       text_balance = 'Current BTC balance: ' +  balance['BTC']
+       text_balance = 'Current available BTC balance: ' +  balance['BTC']
        print(text_balance)
     pollResult=pollCoinsTrades24h()
     print(len(pollResult),len(printed))
-    if len(pollResult)>len(printed):
-        bot.send_message(chat_id=TG_ID, text='<b>'+text_balance+'</b>', parse_mode=telegram.ParseMode.HTML)
+    savedLen = len(printed)
     for key in sorted(pollResult.keys()):
         if key not in printed.keys():
             printed[key]=True
@@ -189,10 +189,13 @@ while (True):
             if pollResult[key][2]=="BUY":
                 bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/buy.png')
             else:
-            	bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/sell.png')
+        	bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/sell.png')
             pollResult[key][0]='<b>'+pollResult[key][0]+'</b>'
             pollResult[key][2]='<b>'+pollResult[key][2]+'</b>'
             pollResult[key][8]='<b>'+pollResult[key][8]+'</b>'
             bot.send_message(chat_id=TG_ID, text=' '.join(pollResult[key]), parse_mode=telegram.ParseMode.HTML)
+    if savedLen < len(printed):
+        savedLen = len(printed)
+        bot.send_message(chat_id=TG_ID, text='<b>'+text_balance+'</b>', parse_mode=telegram.ParseMode.HTML)
     print('Waiting for next ',pollingInterval,' seconds')
     time.sleep(pollingInterval)
