@@ -84,8 +84,9 @@ class poloniex:
             try:
                 ret = urlopen(Request('https://poloniex.com/tradingApi', post_data, headers))
             except URLError as e:
-                print("Polo is lagging, we've got some error  ... continue")
-                print(e.reason,post_data, headers)
+                print("Polo is lagging, we've got some error")
+                print(e.code,e.reason,post_data, headers)
+                #print("  ... continue")
                 return ''
 
             jsonRet = json.loads(ret.read())
