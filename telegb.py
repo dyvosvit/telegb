@@ -83,7 +83,7 @@ class poloniex:
             }
             print(req)
             try:
-                ssl._create_default_https_context = ssl._create_unverified_context()
+                ssl._create_default_https_context = ssl._create_unverified_context
                 ret = urlopen(Request('https://poloniex.com/tradingApi', post_data, headers))
             except URLError as e:
                 print("Polo is lagging, we've got some error")
