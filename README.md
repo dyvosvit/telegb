@@ -6,10 +6,10 @@ Example of screen is here:
 https://prnt.sc/fmefvh
 
 
-1. download and install python 2.7:
+1. download and install python 3.6.1 for windows:
 tick "Add python to PATH" !!
 
-https://www.python.org/downloads/release/python-2713/
+https://www.python.org/downloads/release/python-361/
 
 2. install python-telegram-bot
 
