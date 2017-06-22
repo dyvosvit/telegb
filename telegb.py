@@ -80,11 +80,12 @@ class poloniex:
                 'Sign': sign,
                 'Key': self.APIKey
             }
-            #print(req)
+            print(req)
             try:
                 ret = urlopen(Request('https://poloniex.com/tradingApi', post_data, headers))
             except:
                 print("Polo is lagging, we've got some error  ... continue")
+                print(ret)
                 return ''
 
             jsonRet = json.loads(ret.read())
