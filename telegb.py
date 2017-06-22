@@ -180,6 +180,7 @@ while (True):
     cls()
     print('Showing latest ',latestTrades,' trades')
     balance = testapi.returnBalances()
+    text_balance = 'No balance'
     if balance != '':
        text_balance = 'Current available BTC balance: ' +  balance['BTC']
        print(text_balance)
