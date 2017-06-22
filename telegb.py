@@ -30,6 +30,7 @@ from datetime import date, datetime
 import calendar
 import hmac,hashlib
 import colorama
+import httplib
 from colorama import Fore, Back, Style
 
 try:
