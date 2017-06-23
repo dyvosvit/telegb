@@ -21,7 +21,7 @@ TG_ID = ''
 
 import threading
 import os
-import ssl
+#import ssl
 import telegram
 import time
 import json
@@ -84,10 +84,10 @@ class poloniex:
             }
             print(req)
             try:
-                ssl._create_default_https_context = ssl._create_unverified_context
+                #ssl._create_default_https_context = ssl._create_unverified_context
                 ret = urlopen(Request('https://poloniex.com/tradingApi', post_data, headers))
-            except httplib.BadStatusLine:
-                pass
+            #except httplib.BadStatusLine:
+             #   pass
             except URLError as e:
                 print("Polo is lagging, we've got some error")
                 print(e.code,e.reason)
