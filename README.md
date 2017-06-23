@@ -11,6 +11,16 @@ tick "Add python to PATH" !!
 
 https://www.python.org/downloads/release/python-2713/
 
+for linux users:
+
+apt-get update&&apt-get upgrade
+
+apt-get install curl
+
+curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
+
+python get-pip.py
+
 2. install python-telegram-bot
 
 pip install python-telegram-bot --upgrade
