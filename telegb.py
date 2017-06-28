@@ -185,8 +185,11 @@ while (True):
     balance = testapi.returnBalances()
     text_balance = 'No balance'
     if balance != '':
-       text_balance = 'Current available BTC balance: ' +  balance['BTC']
-       print(text_balance)
+        try:
+            text_balance = 'Current available BTC balance: ' +  balance['BTC']
+        except:
+            pass
+        print(text_balance)
     pollResult=pollCoinsTrades24h()
     print(len(pollResult),len(printed))
     savedLen = len(printed)
