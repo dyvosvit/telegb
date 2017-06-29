@@ -5,7 +5,6 @@
 
 #depends/installs
 # pip install python-telegram-bot --upgrade
-# pip install colorama
 
 #generate new API key/secret from Poloniex and put them here
 pkey = ''
@@ -18,7 +17,6 @@ TG_BOT_TOKEN = ''
 TG_ID = ''
 
 
-
 import threading
 import os
 #import ssl
@@ -29,9 +27,7 @@ import time, datetime
 from datetime import date, datetime
 import calendar
 import hmac,hashlib
-import colorama
 import httplib
-from colorama import Fore, Back, Style
 
 try:
     # For Python 3.0 and later
@@ -74,7 +70,6 @@ class poloniex:
         else:
             req['command'] = command
             req['nonce'] = int(time.time()*1000)
-            #post_data = bytes(urlencode(req),'utf-8')
             post_data = urlencode(req)
 
             sign = hmac.new(self.Secret, post_data, hashlib.sha512).hexdigest()
@@ -84,10 +79,7 @@ class poloniex:
             }
             print(req)
             try:
-                #ssl._create_default_https_context = ssl._create_unverified_context
                 ret = urlopen(Request('https://poloniex.com/tradingApi', post_data, headers))
-            #except httplib.BadStatusLine:
-             #   pass
             except URLError as e:
                 print("Polo is lagging, we've got some error")
                 print(e.code,e.reason)
@@ -110,45 +102,16 @@ class poloniex:
 
     def returnMarketTradeHistory (self, currencyPair):
         return self.api_query("returnMarketTradeHistory", {'currencyPair': currencyPair})
-
-
-    # Returns all of your balances.
-    # Outputs: 
-    # {"BTC":"0.59098578","LTC":"3.31117268", ... }
+        
     def returnBalances(self):
         return self.api_query('returnBalances')
 
-    # Returns your trade history for a given market, specified by the "currencyPair" POST parameter
-    # Inputs:
-    # currencyPair  The currency pair e.g. "BTC_XCP"
-    # Outputs: 
-    # date          Date in the form: "2014-02-19 03:44:59"
-    # rate          Price the order is selling or buying at
-    # amount        Quantity of order
-    # total         Total value of order (price * quantity)
-    # type          sell or buy
     def returnTradeHistory(self,currencyPair):
         return self.api_query('returnTradeHistory',{"currencyPair":currencyPair})
 
 
-def cls():
-    os.system('cls' if os.name=='nt' else 'clear')
-colorama.init()
 testapi = poloniex(pkey,spkey)
-check_coins = 'currencies.txt'
-pollingInterval = raw_input('How often should we poll trades? (default: 30 seconds)')
-if pollingInterval == '':
-    pollingInterval = 30
-else:
-    pollingInterval = int(pollingInterval)
-latestTrades = raw_input('How many trades should we see? (default: 30 trades)')
-if latestTrades == '':
-    latestTrades = 30
-else:
-    latestTrades = int(latestTrades)
-RED= '\033[91m'
-GREEN='\033[92m'
-ENDC='\033[0m'
+pollingInterval = 1
 
 def pollCoinsTrades24h():
     print_coins = []
@@ -171,17 +134,13 @@ def pollCoinsTrades24h():
                 work_set[int(element['globalTradeID'])]=['BTC_'+line[4:], element['date'],element['type'].upper(), 'of',line[4:] , 'at', element['rate'],thetext,totald]
     pollResult = {}
     for key in sorted(work_set.keys(),reverse=True)[:latestTrades]:
-        colorit = RED if work_set[key][2] == 'BUY' else GREEN
         pollResult[key] = work_set[key]
-        print(colorit+' '.join(pollResult[key])+ENDC)
     return pollResult
 
 
 bot = telegram.Bot(token=TG_BOT_TOKEN)
 printed = {}
 while (True):
-    cls()
-    print('Showing latest ',latestTrades,' trades')
     balance = testapi.returnBalances()
     text_balance = 'No balance'
     if balance != '':
@@ -189,9 +148,7 @@ while (True):
             text_balance = 'Current available BTC balance: ' +  balance['BTC']
         except:
             pass
-        print(text_balance)
     pollResult=pollCoinsTrades24h()
-    print(len(pollResult),len(printed))
     savedLen = len(printed)
     for key in sorted(pollResult.keys()):
         if key not in printed.keys():
@@ -200,7 +157,7 @@ while (True):
             if pollResult[key][2]=="BUY":
                 bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/buy.png')
             else:
-        	bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/sell.png')
+                bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/sell.png')
             pollResult[key][0]='<b>'+pollResult[key][0]+'</b>'
             pollResult[key][2]='<b>'+pollResult[key][2]+'</b>'
             pollResult[key][8]='<b>'+pollResult[key][8]+'</b>'
@@ -208,5 +165,4 @@ while (True):
     if savedLen < len(printed):
         savedLen = len(printed)
         bot.send_message(chat_id=TG_ID, text='<b>'+text_balance+'</b>', parse_mode=telegram.ParseMode.HTML)
-    print('Waiting for next ',pollingInterval,' seconds')
-    time.sleep(pollingInterval)
+    time.sleep(1)
