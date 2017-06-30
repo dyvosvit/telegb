@@ -133,7 +133,7 @@ def pollCoinsTrades24h():
                 thetext = 'with investments of' if element['type']=='buy' else 'with revenue of'
                 work_set[int(element['globalTradeID'])]=['BTC_'+line[4:], element['date'],element['type'].upper(), 'of',line[4:] , 'at', element['rate'],thetext,totald]
     pollResult = {}
-    for key in sorted(work_set.keys(),reverse=True)[:latestTrades]:
+    for key in sorted(work_set.keys(),reverse=True):
         pollResult[key] = work_set[key]
     return pollResult
 
