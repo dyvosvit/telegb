@@ -25,9 +25,6 @@ python get-pip.py
 
 pip install python-telegram-bot --upgrade
 
-3. install colorama (for colored outputs)
-
-pip install colorama
 
 HOWTO ACTIVATE THIS BOT:
 
