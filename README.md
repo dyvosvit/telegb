@@ -46,7 +46,11 @@ Change "TG_ID" to your telegram chat id (to find it out send command "/my_id" to
 
 RUN:
 
-python telegb.py
+for poloniex:
+python telepl.py
+
+for bittrex:
+python telebt.py
 
 #it worked for you, you use and like it = donate any amount you wish
 
