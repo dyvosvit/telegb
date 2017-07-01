@@ -28,7 +28,7 @@ pip install python-telegram-bot --upgrade
 
 HOWTO ACTIVATE THIS BOT:
 
-In telegb.py or telebt.py:
+In telepl.py or telebt.py:
 
 Generate new API from Poloniex or Bittrex, change pkey/spkey
 
