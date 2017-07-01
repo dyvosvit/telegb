@@ -1,4 +1,4 @@
-Telegram bot to watch your trades on Poloniex.
+Telegram bot to watch your trades on Poloniex or Bittrex.
 
 This is Python 2 Script 
 
@@ -28,9 +28,9 @@ pip install python-telegram-bot --upgrade
 
 HOWTO ACTIVATE THIS BOT:
 
-In telegb.py:
+In telegb.py or telebt.py:
 
-Generate new API from polo, change pkey/spkey
+Generate new API from Poloniex or Bittrex, change pkey/spkey
 
 Change "TG_BOT_TOKEN" to your telegram bot token that you got from BotFather:
 
