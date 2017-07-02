@@ -168,5 +168,5 @@ while (True):
             except:
                 pass
         print text_balance
-        bot.send_message(chat_id=TG_ID, text='<b>'+"<b>POLONIEX: </b>"+text_balance+'</b>', parse_mode=telegram.ParseMode.HTML)
+        bot.send_message(chat_id=TG_ID, text='<b>'+"POLONIEX: "+text_balance+'</b>', parse_mode=telegram.ParseMode.HTML)
     time.sleep(pollingInterval)
