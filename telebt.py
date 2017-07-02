@@ -226,5 +226,5 @@ while (True):
         print text_estimated
         bot.send_message(chat_id=TG_ID, text='<b>' + text_balance + '</b>', parse_mode=telegram.ParseMode.HTML)
         bot.send_message(chat_id=TG_ID, text='<b>' + text_estimated + '</b>', parse_mode=telegram.ParseMode.HTML)
-    print 'wait 1 sec'
-    time.sleep(1)
+    #print 'wait 1 sec'
+    time.sleep(pollingInterval)
