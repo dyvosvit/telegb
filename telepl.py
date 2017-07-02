@@ -11,10 +11,9 @@ pkey = ''
 spkey = ''
 
 # put in the telegram bot token from @BotFather
-TG_BOT_TOKEN = ''
-
-# put in your telegram chat id from @get_id_bot
-TG_ID = ''
+TG_ID = ""
+# put in the telegram bot token from @BotFather
+TG_BOT_TOKEN = ""
 
 pollingInterval = 1
 latestTrades = 10
@@ -55,7 +54,7 @@ class poloniex:
                 for x in xrange(0, len(after['return'])):
                     if(isinstance(after['return'][x], dict)):
                         if('datetime' in after['return'][x] and 'timestamp' not in after['return'][x]):
-                            after['return'][x]['timestamp'] = float(createTimeStamp(after['return'][x]['datetime']))
+                            after['return'][x]['timestamp'] = float(date.createTimeStamp(after['return'][x]['datetime']))
                             
         return after
 
@@ -80,12 +79,12 @@ class poloniex:
                 'Sign': sign,
                 'Key': self.APIKey
             }
-            print(req)
+            #print(req)
             try:
                 ret = urlopen(Request('https://poloniex.com/tradingApi', post_data, headers))
             except URLError as e:
                 print("Polo is lagging, we've got some error")
-                print(e.code,e.reason)
+                print(e.message,e.reason)
                 print("  ... continue")
                 return ''
 
@@ -143,16 +142,9 @@ def pollCoinsTrades24h():
 
 bot = telegram.Bot(token=TG_BOT_TOKEN)
 printed = {}
+savedLen = len(printed)
 while (True):
-    balance = testapi.returnBalances()
-    text_balance = 'No balance'
-    if balance != '':
-        try:
-            text_balance = 'Current available BTC balance: ' +  balance['BTC']
-        except:
-            pass
     pollResult=pollCoinsTrades24h()
-    savedLen = len(printed)
     for key in sorted(pollResult.keys()):
         if key not in printed.keys():
             printed[key]=True
@@ -164,8 +156,17 @@ while (True):
             pollResult[key][0]='<b>'+pollResult[key][0]+'</b>'
             pollResult[key][2]='<b>'+pollResult[key][2]+'</b>'
             pollResult[key][8]='<b>'+pollResult[key][8]+'</b>'
+            print "<b>POLONIEX: </b>"+' '.join(pollResult[key])
             bot.send_message(chat_id=TG_ID, text="<b>POLONIEX: </b>"+' '.join(pollResult[key]), parse_mode=telegram.ParseMode.HTML)
     if savedLen < len(printed):
         savedLen = len(printed)
-        bot.send_message(chat_id=TG_ID, text='<b>'+text_balance+'</b>', parse_mode=telegram.ParseMode.HTML)
+        balance = testapi.returnBalances()
+        text_balance = 'No balance'
+        if balance != '':
+            try:
+                text_balance = 'Current available Poloniex BTC balance: ' + balance['BTC']
+            except:
+                pass
+        print text_balance
+        bot.send_message(chat_id=TG_ID, text='<b>'+"<b>POLONIEX: </b>"+text_balance+'</b>', parse_mode=telegram.ParseMode.HTML)
     time.sleep(pollingInterval)
