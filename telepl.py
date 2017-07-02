@@ -164,7 +164,7 @@ while (True):
             pollResult[key][0]='<b>'+pollResult[key][0]+'</b>'
             pollResult[key][2]='<b>'+pollResult[key][2]+'</b>'
             pollResult[key][8]='<b>'+pollResult[key][8]+'</b>'
-            bot.send_message(chat_id=TG_ID, text=' '.join(pollResult[key]), parse_mode=telegram.ParseMode.HTML)
+            bot.send_message(chat_id=TG_ID, text="<b>POLONIEX: </b>"+' '.join(pollResult[key]), parse_mode=telegram.ParseMode.HTML)
     if savedLen < len(printed):
         savedLen = len(printed)
         bot.send_message(chat_id=TG_ID, text='<b>'+text_balance+'</b>', parse_mode=telegram.ParseMode.HTML)
