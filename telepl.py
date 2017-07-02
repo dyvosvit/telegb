@@ -16,6 +16,9 @@ TG_BOT_TOKEN = ''
 # put in your telegram chat id from @get_id_bot
 TG_ID = ''
 
+pollingInterval = 1
+latestTrades = 10
+
 
 import threading
 import os
@@ -133,7 +136,7 @@ def pollCoinsTrades24h():
                 thetext = 'with investments of' if element['type']=='buy' else 'with revenue of'
                 work_set[int(element['globalTradeID'])]=['BTC_'+line[4:], element['date'],element['type'].upper(), 'of',line[4:] , 'at', element['rate'],thetext,totald]
     pollResult = {}
-    for key in sorted(work_set.keys(),reverse=True):
+    for key in sorted(work_set.keys(),reverse=True)[:latestTrades]:
         pollResult[key] = work_set[key]
     return pollResult
 
@@ -165,4 +168,4 @@ while (True):
     if savedLen < len(printed):
         savedLen = len(printed)
         bot.send_message(chat_id=TG_ID, text='<b>'+text_balance+'</b>', parse_mode=telegram.ParseMode.HTML)
-    time.sleep(1)
+    time.sleep(pollingInterval)
