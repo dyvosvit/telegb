@@ -203,7 +203,7 @@ while (True):
             pollResult[key][5] = '<b>' + pollResult[key][5] + '</b>'
             pollResult[key][9] = '<b>' + pollResult[key][9] + '</b>'
             print ' '.join(pollResult[key])
-            bot.send_message(chat_id=TG_ID, text=' '.join(pollResult[key]), parse_mode=telegram.ParseMode.HTML)
+            bot.send_message(chat_id=TG_ID, text="<b>Bittrex: </b>"+' '.join(pollResult[key]), parse_mode=telegram.ParseMode.HTML)
     if savedLen < len(printed):
         savedLen = len(printed)
         text_balance = 'Current available BTC balance is: '
