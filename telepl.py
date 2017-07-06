@@ -133,7 +133,7 @@ def pollCoinsTrades24h():
         work_set = {}
         for line in tradeHistory24h:
             for element in tradeHistory24h[line]:
-                print(element)
+                #print(element)
                 signd = '-' if element['type']=='buy' else '+'
                 totald = signd+element['total']
                 thetext = 'with investments of' if element['type']=='buy' else 'with revenue of'
