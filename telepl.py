@@ -118,26 +118,28 @@ pollingInterval = 1
 def pollCoinsTrades24h():
     print_coins = []
     tradeHistory24h = testapi.returnTradeHistory('All')
-    if set_debug:
-        print(tradeHistory24h)
-    try:
-        with open(check_coins, 'r') as afile:
-            for coin in afile:
-                print_coins += [coin.strip()]
-    except:
-        if print_coins == []:
-            print_coins = 'ETH XRP XEM LTC STR  BCN ETC DGB SC BTS DOGE DASH GNT EMC2 STEEM XMR ARDR STRAT NXT  ZEC LSK  FCT GNO NMC MAID   BURST GAME  DCR  SJCX RIC FLO REP NOTE CLAM SYS PPC EXP XVC VTC FLDC LBC AMP POT NAV XCP  BTCD  RADS   PINK GRC  NAUT  BELA  OMNI HUC NXC VRC  XPM VIA PASC  BTM NEOS XBC  BLK SBD BCY'
-            print_coins = print_coins.strip().split()
-    work_set = {}
-    for line in tradeHistory24h:
-        for element in tradeHistory24h[line]:
-            signd = '-' if element['type']=='buy' else '+'
-            totald = signd+element['total']
-            thetext = 'with investments of' if element['type']=='buy' else 'with revenue of'
-            work_set[int(element['globalTradeID'])]=[line, element['date'],element['type'].upper(), 'of',line.split('_')[1] , 'at', element['rate'],thetext,totald]
     pollResult = {}
-    for key in sorted(work_set.keys(),reverse=True)[:latestTrades]:
-        pollResult[key] = work_set[key]
+    if tradeHistory24h != '':
+        if set_debug:
+            print(tradeHistory24h)
+        try:
+            with open(check_coins, 'r') as afile:
+                for coin in afile:
+                    print_coins += [coin.strip()]
+        except:
+            if print_coins == []:
+                print_coins = 'ETH XRP XEM LTC STR  BCN ETC DGB SC BTS DOGE DASH GNT EMC2 STEEM XMR ARDR STRAT NXT  ZEC LSK  FCT GNO NMC MAID   BURST GAME  DCR  SJCX RIC FLO REP NOTE CLAM S
+                print_coins = print_coins.strip().split()
+        work_set = {}
+        for line in tradeHistory24h:
+            for element in tradeHistory24h[line]:
+                print(element)
+                signd = '-' if element['type']=='buy' else '+'
+                totald = signd+element['total']
+                thetext = 'with investments of' if element['type']=='buy' else 'with revenue of'
+                work_set[int(element['globalTradeID'])]=[line, element['date'],element['type'].upper(), 'of',line.split('_')[1] , 'at', element['rate'],thetext,totald]
+        for key in sorted(work_set.keys(),reverse=True)[:latestTrades]:
+            pollResult[key] = work_set[key]
     return pollResult
 
 
@@ -146,28 +148,29 @@ printed = {}
 savedLen = len(printed)
 while (True):
     pollResult=pollCoinsTrades24h()
-    for key in sorted(pollResult.keys()):
-        if key not in printed.keys():
-            printed[key]=True
-            time.sleep(0.33)
-            if pollResult[key][2]=="BUY":
-                bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/buy.png')
-            else:
-                bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/sell.png')
-            pollResult[key][0]='<b>'+pollResult[key][0]+'</b>'
-            pollResult[key][2]='<b>'+pollResult[key][2]+'</b>'
-            pollResult[key][8]='<b>'+pollResult[key][8]+'</b>'
-            print "<b>POLONIEX: </b>"+' '.join(pollResult[key])
-            bot.send_message(chat_id=TG_ID, text="<b>POLONIEX: </b>"+' '.join(pollResult[key]), parse_mode=telegram.ParseMode.HTML)
-    if savedLen < len(printed):
-        savedLen = len(printed)
-        balance = testapi.returnBalances()
-        text_balance = 'No balance'
-        if balance != '':
-            try:
-                text_balance = 'Current available Poloniex BTC balance: ' + balance['BTC']
-            except:
-                pass
-        print text_balance
-        bot.send_message(chat_id=TG_ID, text='<b>'+"POLONIEX: "+text_balance+'</b>', parse_mode=telegram.ParseMode.HTML)
+    if pollResult!='':
+        for key in sorted(pollResult.keys()):
+            if key not in printed.keys():
+                printed[key]=True
+                time.sleep(0.33)
+                if pollResult[key][2]=="BUY":
+                    bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/buy.png')
+                else:
+                    bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/sell.png')
+                pollResult[key][0]='<b>'+pollResult[key][0]+'</b>'
+                pollResult[key][2]='<b>'+pollResult[key][2]+'</b>'
+                pollResult[key][8]='<b>'+pollResult[key][8]+'</b>'
+                print "<b>POLONIEX: </b>"+' '.join(pollResult[key])
+                bot.send_message(chat_id=TG_ID, text="<b>POLONIEX: </b>"+' '.join(pollResult[key]), parse_mode=telegram.ParseMode.HTML)
+        if savedLen < len(printed):
+            savedLen = len(printed)
+            balance = testapi.returnBalances()
+            text_balance = 'No balance'
+            if balance != '':
+                try:
+                    text_balance = 'Current available Poloniex BTC balance: ' + balance['BTC']
+                except:
+                    pass
+            print text_balance
+            bot.send_message(chat_id=TG_ID, text='<b>'+"POLONIEX: "+text_balance+'</b>', parse_mode=telegram.ParseMode.HTML)
     time.sleep(pollingInterval)
