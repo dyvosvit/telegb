@@ -2,7 +2,7 @@
 #BTC: 1HRjjHByNL2enV1eRR1RkN698tucecL6FA
 #ETH: 0x4e5e7b86baf1f8d6dfb8a242c85201c47fa86c74
 #ZEC: t1aKAm7qXi6fbGvAhbLioZm3Q8obb4e3BRo
-set_debug = True
+set_debug = False
 #depends/installs
 # pip install python-telegram-bot --upgrade
 
