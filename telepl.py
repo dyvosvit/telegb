@@ -130,12 +130,11 @@ def pollCoinsTrades24h():
             print_coins = print_coins.strip().split()
     work_set = {}
     for line in tradeHistory24h:
-        if line[4:] in print_coins:
-            for element in tradeHistory24h[line]:
-                signd = '-' if element['type']=='buy' else '+'
-                totald = signd+element['total']
-                thetext = 'with investments of' if element['type']=='buy' else 'with revenue of'
-                work_set[int(element['globalTradeID'])]=['BTC_'+line[4:], element['date'],element['type'].upper(), 'of',line[4:] , 'at', element['rate'],thetext,totald]
+        for element in tradeHistory24h[line]:
+            signd = '-' if element['type']=='buy' else '+'
+            totald = signd+element['total']
+            thetext = 'with investments of' if element['type']=='buy' else 'with revenue of'
+            work_set[int(element['globalTradeID'])]=[line, element['date'],element['type'].upper(), 'of',line.split('_')[1] , 'at', element['rate'],thetext,totald]
     pollResult = {}
     for key in sorted(work_set.keys(),reverse=True)[:latestTrades]:
         pollResult[key] = work_set[key]
