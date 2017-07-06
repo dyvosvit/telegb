@@ -30,6 +30,10 @@ from datetime import date, datetime
 import calendar
 import hmac,hashlib
 import httplib
+import socket
+
+timeout = 10
+socket.setdefaulttimeout(timeout)
 
 try:
     # For Python 3.0 and later
