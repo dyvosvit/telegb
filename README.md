@@ -132,12 +132,19 @@ python telebt.py
 
 
 UPD: for community proxy users:
+
 apt-get install tmux
+
 tmux new-session
+
 echo "127.0.0.1 localhost" >./my_hosts
+
 echo "104.20.12.48 poloniex.com" >>./my_hosts
+
 sudo unshare -m bash -c "mount ./my_hosts /etc/hosts --bind; bash"
+
 cat /etc/hosts
+
 python telebt.pyy
 
 or
