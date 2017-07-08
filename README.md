@@ -149,7 +149,7 @@ sudo unshare -m bash -c "mount ./my_hosts /etc/hosts --bind; bash"
 
 cat /etc/hosts
 
-python telebt.pyy
+python telebt.py
 
 or
 
