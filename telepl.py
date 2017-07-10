@@ -2,15 +2,15 @@
 #BTC: 1HRjjHByNL2enV1eRR1RkN698tucecL6FA
 #ETH: 0x4e5e7b86baf1f8d6dfb8a242c85201c47fa86c74
 #ZEC: t1aKAm7qXi6fbGvAhbLioZm3Q8obb4e3BRo
-set_debug = False
+
 #depends/installs
 # pip install python-telegram-bot --upgrade
-
+set_debug = False
 #generate new API key/secret from Poloniex and put them here
 pkey = ''
 spkey = ''
 
-# put in the telegram bot token from @BotFather
+# put in your telegram chat id from @get_id_bot
 TG_ID = ""
 # put in the telegram bot token from @BotFather
 TG_BOT_TOKEN = ""
@@ -21,7 +21,7 @@ latestTrades = 10
 
 import threading
 import os
-#import ssl
+import ssl
 import telegram
 import time
 import json
@@ -91,6 +91,10 @@ class poloniex:
                 print(e.message,e.reason)
                 print("  ... continue")
                 return ''
+            except ssl.SSLError:
+                print("Internet is lagging, we've got SSL error")
+                return ''
+
 
             jsonRet = json.loads(ret.read())
 
@@ -137,8 +141,7 @@ def pollCoinsTrades24h():
         work_set = {}
         for line in tradeHistory24h:
             for element in tradeHistory24h[line]:
-                if set_debug:
-                    print(element)
+#                print(element)
                 signd = ''
                 try:
                     signd = '-' if element['type']=='buy' else '+'
