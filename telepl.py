@@ -65,13 +65,13 @@ class poloniex:
     def api_query(self, command, req={}):
 
         if(command == "returnTicker" or command == "return24Volume"):
-            ret = urlopen(Request('https://poloniex.com/public?command=' + command))
+            ret = urlopen(Request('https://www.poloniex.com/public?command=' + command))
             return json.loads(ret.read())
         elif(command == "returnOrderBook"):
-            ret = urlopen(Request('https://poloniex.com/public?command=' + command + '&currencyPair=' + str(req['currencyPair'])))
+            ret = urlopen(Request('https://www.poloniex.com/public?command=' + command + '&currencyPair=' + str(req['currencyPair'])))
             return json.loads(ret.read())
         elif(command == "returnMarketTradeHistory"):
-            ret = urlopen(Request('https://poloniex.com/public?command=' + "returnTradeHistory" + '&currencyPair=' + str(req['currencyPair'])))
+            ret = urlopen(Request('https://www.poloniex.com/public?command=' + "returnTradeHistory" + '&currencyPair=' + str(req['currencyPair'])))
             return json.loads(ret.read())
         else:
             req['command'] = command
@@ -85,7 +85,7 @@ class poloniex:
             }
             #print(req)
             try:
-                ret = urlopen(Request('https://poloniex.com/tradingApi', post_data, headers))
+                ret = urlopen(Request('https://www.poloniex.com/tradingApi', post_data, headers))
             except URLError as e:
                 print("Polo is lagging, we've got some error")
                 print(e.message,e.reason)
