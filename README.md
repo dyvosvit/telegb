@@ -1,58 +1,85 @@
-Telegram bot to watch your trades on Poloniex or Bittrex.
+# Telegram Bot to watch your trades on Poloniex or Bittrex.
 
 This is Python 2 Script 
 
 Example of screen is here:
 https://prnt.sc/fmefvh
 
+## Windows
 
-1. download and install python 2.7.13 for windows:
+1. Download and install python 2.7.13 for windows:
 tick "Add python to PATH" !!
 
 https://www.python.org/downloads/release/python-2713/
 
-for linux users:
+## Linux
 
-apt-get update&&apt-get upgrade
+1. Install curl and pip
 
-apt-get install curl
+    ```
+    sudo apt-get update && sudo apt-get upgrade
+    sudo apt-get install curl
+    
+    curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
+    sudo python get-pip.py
+    ```
+    
+2. Install python-telegram-bot
 
-curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
+    ```
+    sudo pip install python-telegram-bot --upgrade
+    ```
 
-python get-pip.py
+## HOWTO CREATE AND CONFIGURE THIS BOT:
 
-2. install python-telegram-bot
+_telepl.py_ is for Poloniex
+_telebt.py_ is for Bittrex
 
-pip install python-telegram-bot --upgrade
+1. Generate new API key from Poloniex or Bittrex. Edit the appropriate script file for your exchange and change the __pkey__ and __spkey__ variables.
+
+2. Talk to @BotFather and type "/newbot" to create a bot. Answer the questions by typing answers and pressing enter.
+
+3. Start a chat to your bot's name (for ex. @gb-to-telegram) and press start button
+
+4. Start another chat with https://telegram.me/get_id_bot This bot will reveal your __Chat ID__
+
+5. Edit the appropriate script and change __TG_BOT_TOKEN__ to the telegram bot token that you got from BotFather and change __TG_ID__ to your telegram chat id that you got from @get_id_bot
+
+### Optional
+
+In the script there are 3 settings you can turn on/off to suit your desires:
+
+    want_console_output = True (or False)    // Displays same output to console/SSH as to bot
+    want_pictures = True (or False)          // Displays 'BUY' and 'SELL' text images in bot chat
+    set_debug = False (or True)              // Displays last 24 hours trades on console/SSH
+
+## RUNING THE BOT:
+
+### For Poloniex:
+
+    python telepl.py
+
+### For Bittrex:
+
+    python telebt.py
+
+## UPDATE: For GunBot Community proxy users:
+
+    apt-get install tmux
+    tmux new-session
+
+    echo "127.0.0.1 localhost" >./my_hosts
+    echo "104.20.12.48 poloniex.com" >>./my_hosts
+
+    sudo unshare -m bash -c "mount ./my_hosts /etc/hosts --bind; bash"
+
+    cat /etc/hosts
+
+After you do the above commands, you can run the bot as above.
 
 
-HOWTO ACTIVATE THIS BOT:
 
-In telepl.py or telebt.py:
-
-Generate new API from Poloniex or Bittrex, change pkey/spkey
-
-Change "TG_BOT_TOKEN" to your telegram bot token that you got from BotFather:
-
-Talk to @BotFather and type "/newbot" to create a bot.
-
-answer the questions by typing answers and pressing enter
-
-then type in chat your bot's name (for ex. @gb-to-telegram)
-
-and press start button
-
-Change "TG_ID" to your telegram chat id (to find it out send command "/my_id" to telegram user @get_id_bot)
-
-RUN:
-
-for poloniex:
-python telepl.py
-
-for bittrex:
-python telebt.py
-
-#it worked for you, you use and like it = donate any amount you wish
+If it worked for you, you use and like it = donate any amount you wish
 
 #BTC: 1HRjjHByNL2enV1eRR1RkN698tucecL6FA
 
@@ -127,31 +154,3 @@ python telebt.py
 Я приветствую Ваши идеи, дополнения ...
 
 Моя телеграмма @Dyvosvit
-
-
-
-
-
-
-
-
-******UPD: for community proxy users:
-
-apt-get install tmux
-
-tmux new-session
-
-echo "127.0.0.1 localhost" >./my_hosts
-
-echo "104.20.12.48 poloniex.com" >>./my_hosts
-
-sudo unshare -m bash -c "mount ./my_hosts /etc/hosts --bind; bash"
-
-cat /etc/hosts
-
-python telebt.py
-
-or
-
-python telepl.py
-
