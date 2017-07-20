@@ -12,10 +12,10 @@
 set_debug = False
 
 # If you don't want the 'BUY'/'SELL' images in your Telegram, set this to False
-want_pictures = True
+want_pictures = False
 
 # If you don't want console/ssh output, set this to False
-want_console_output = True
+want_console_output = False
 
 # Generate new API key/secret from Poloniex and put them here
 pkey = ''
@@ -202,7 +202,8 @@ def worker():
                     type, poloResults[gtid]['amount'], poloResults[gtid]['rate'], '-' if type == 'BUY' else '+',
                     poloResults[gtid]['total'])
 
-            # bot.send_message(chat_id=TG_ID, text=botMessage, parse_mode=telegram.ParseMode.HTML)
+            # Call Telegram bot API
+            bot.send_message(chat_id=TG_ID, text=botMessage, parse_mode=telegram.ParseMode.HTML)
 
         # We've displayed all recent trades
         # Save the last trade timestamp for more efficient API calls.
@@ -222,7 +223,7 @@ def worker():
         if want_console_output:
             print txtBalance
 
-        # bot.send_message(chat_id=TG_ID, text="<b>POLONIEX: %s</b>" % (txtBalance), parse_mode=telegram.ParseMode.HTML)
+        bot.send_message(chat_id=TG_ID, text="<b>POLONIEX: %s</b>" % (txtBalance), parse_mode=telegram.ParseMode.HTML)
 
         # Sleep the while-loop
         time.sleep(pollingInterval)
