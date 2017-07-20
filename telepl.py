@@ -1,4 +1,4 @@
-## A Telegram Bot for Poloniex Trades ##
+# A Telegram Bot for Poloniex Trades ##
 #
 # If it worked for you, you use and like it = donate any amount you wish
 # BTC: 1HRjjHByNL2enV1eRR1RkN698tucecL6FA
@@ -38,15 +38,17 @@ import ssl
 import telegram
 import time
 import json
-import time, datetime
-from datetime import date, datetime
-import calendar
-import hmac,hashlib
+import hmac
+import hashlib
 import httplib
 import socket
 
 timeout = 10
 socket.setdefaulttimeout(timeout)
+
+# Force all datetime calculations to UTC
+# because that's what Poloniex uses
+os.environ['TZ'] = 'UTC'
 
 try:
     # For Python 3.0 and later
@@ -54,25 +56,15 @@ try:
     from urllib.parse import urlencode
 except ImportError:
     # Fall back to Python 2's urllib2
+    import urllib2
     from urllib2 import Request, urlopen, URLError, HTTPError
     from urllib import urlencode
+
 
 class poloniex:
     def __init__(self, APIKey, Secret):
         self.APIKey = APIKey
         self.Secret = Secret
-
-    def post_process(self, before):
-        after = before
-
-        # Add timestamps if there isnt one but is a datetime
-        if('return' in after):
-            if(isinstance(after['return'], list)):
-                for x in xrange(0, len(after['return'])):
-                    if(isinstance(after['return'][x], dict)):
-                        if('datetime' in after['return'][x] and 'timestamp' not in after['return'][x]):
-                            after['return'][x]['timestamp'] = float(date.createTimeStamp(after['return'][x]['datetime']))
-        return after
 
     def api_query(self, command, req={}):
 
@@ -81,33 +73,35 @@ class poloniex:
                 ret = urlopen(Request('https://www.poloniex.com/public?command=' + command))
                 return json.loads(ret.read())
             elif(command == "returnOrderBook"):
-                ret = urlopen(Request('https://www.poloniex.com/public?command=' + command + '&currencyPair=' + str(req['currencyPair'])))
+                ret = urlopen(Request('https://www.poloniex.com/public?command=' + command +
+                              '&currencyPair=' + str(req['currencyPair'])))
                 return json.loads(ret.read())
             elif(command == "returnMarketTradeHistory"):
-                ret = urlopen(Request('https://www.poloniex.com/public?command=' + "returnTradeHistory" + '&currencyPair=' + str(req['currencyPair'])))
+                ret = urlopen(Request('https://www.poloniex.com/public?command=' + "returnTradeHistory" +
+                              '&currencyPair=' + str(req['currencyPair'])))
                 return json.loads(ret.read())
             else:
                 req['command'] = command
                 req['nonce'] = int(time.time()*1000)
                 post_data = urlencode(req)
-    
+
                 sign = hmac.new(self.Secret, post_data, hashlib.sha512).hexdigest()
-                headers = {
-                    'Sign': sign,
-                    'Key': self.APIKey
-                }
+                headers = { 'Sign': sign, 'Key': self.APIKey }
+
+                # For deep debugging
+                # req = urllib2.Request('https://www.poloniex.com/tradingApi', post_data, headers)
+                # opener = urllib2.build_opener(urllib2.HTTPSHandler(debuglevel=1))
+                # ret = opener.open(req)
 
                 ret = urlopen(Request('https://www.poloniex.com/tradingApi', post_data, headers))
-                jsonRet = json.loads(ret.read())
-                return self.post_process(jsonRet)
+
+                return json.loads(ret.read())
 
         except URLError as e:
-            print("Polo is lagging, we've got some error")
-            print(e.message,e.reason)
-            print("  ... continue")
+            print "Polo is lagging, or we've got some error: '%s', '%s'" % (e.message, e.reason)
             return ''
-        except ssl.SSLError:
-            print("Internet is lagging, we've got SSL error")
+        except ssl.SSLError as e:
+            print "Internet is lagging, or we've got SSL error: '%s', '%s'" % (e.message, e.reason)
             return ''
 
     def returnTicker(self):
@@ -116,97 +110,129 @@ class poloniex:
     def return24Volume(self):
         return self.api_query("return24Volume")
 
-    def returnOrderBook (self, currencyPair):
+    def returnOrderBook(self, currencyPair):
         return self.api_query("returnOrderBook", {'currencyPair': currencyPair})
 
-    def returnMarketTradeHistory (self, currencyPair):
+    def returnMarketTradeHistory(self, currencyPair):
         return self.api_query("returnMarketTradeHistory", {'currencyPair': currencyPair})
-        
+
     def returnBalances(self):
         return self.api_query('returnBalances')
 
-    def returnTradeHistory(self,currencyPair):
-        return self.api_query('returnTradeHistory',{"currencyPair":currencyPair})
+    def returnTradeHistory(self, currencyPair, start=0, stop=0):
+        params = {"currencyPair": currencyPair}
+        if start > 0:
+            params["start"] = start
+        if stop > 0:
+            params["stop"] = stop
 
-testapi = poloniex(pkey,spkey)
+        return self.api_query('returnTradeHistory', params)
 
-def pollCoinsTrades24h():
-    print_coins = []
-    tradeHistory24h = testapi.returnTradeHistory('All')
-    pollResult = {}
-    if tradeHistory24h != '':
-        if set_debug:
-            print(tradeHistory24h)
-        try:
-            with open(check_coins, 'r') as afile:
-                for coin in afile:
-                    print_coins += [coin.strip()]
-        except:
-            if print_coins == []:
-                print_coins = 'ETH XRP XEM LTC STR BCN ETC DGB SC BTS DOGE DASH GNT EMC2 STEEM XMR ARDR STRAT NXT ZEC LSK FCT GNO NMC MAIDBURST GAME DCR SJCX RIC FLO REP NOTE CLAM SYS PPC EXP XVC VTC FLDC LBC AMP POT NAV XCP BTCD RADSPINK GRC NAUT BELA OMNI HUC NXC VRC XPM VIA PASC BTM NEOS XBC BLK SBD BCY'
-                print_coins = print_coins.strip().split()
-        work_set = {}
-        for line in tradeHistory24h:
-            for element in tradeHistory24h[line]:
-                signd = ''
-                try:
-                    signd = '-' if element['type']=='buy' else '+'
-                    totald = signd+element['total']
-                    thetext = 'with investments of' if element['type']=='buy' else 'with revenue of'
-                    work_set[int(element['globalTradeID'])]=[line, element['date'],element['type'].upper(), 'of',line.split('_')[1] , 'at', element['rate'],thetext,totald]
-                except:
-                    pass
-        for key in sorted(work_set.keys(),reverse=True)[:latestTrades]:
-            pollResult[key] = work_set[key]
-    return pollResult
 
 def worker():
     bot = telegram.Bot(token=TG_BOT_TOKEN)
-    printed = {}
-    savedLen = len(printed)
+    printed = set()
+
+    # Start out with last 24hrs history
+    mostRecentTimestamp = int(time.time() - 86400)
 
     while (True):
-        pollResult=pollCoinsTrades24h()
-        if pollResult!='':
-            for key in sorted(pollResult.keys()):
-                if key not in printed.keys():
-                    printed[key]=True
-                    time.sleep(0.33)
+        tradeHistory24h = poloClient.returnTradeHistory('All', mostRecentTimestamp)
 
-                    if want_pictures:
-                        if pollResult[key][2]=="BUY":
-                            bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/buy.png')
-                        else:
-                            bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/sell.png')
+        if set_debug:
+            print "TRADE24: %s" % (json.dumps(tradeHistory24h))
 
-                    pollResult[key][0]='<b>'+pollResult[key][0]+'</b>'
-                    pollResult[key][2]='<b>'+pollResult[key][2]+'</b>'
-                    pollResult[key][8]='<b>'+pollResult[key][8]+'</b>'
+        # If nothing new, sleep and loop
+        if len(tradeHistory24h) == 0:
+            if want_console_output:
+                print "%s - No new trades since '%s'." % (time.strftime('%c'), time.strftime('%c', time.localtime(mostRecentTimestamp)))
+            time.sleep(pollingInterval)
+            continue
 
-                    if want_console_output:
-                        print "<b>POLONIEX: </b>"+' '.join(pollResult[key])
+        # Sample JSON data
+        # { "category": "exchange", "fee": "0.00250000", "tradeID": "860775", "orderNumber": "10510",
+        #   "amount": "194.19281307", "rate": "0.00004444", "date": "2017-07-19 11:03:46",
+        #   "total": "0.00862992", "type": "sell", "globalTradeID": 1942 }
 
-                    bot.send_message(chat_id=TG_ID, text="<b>POLONIEX: </b>"+' '.join(pollResult[key]), parse_mode=telegram.ParseMode.HTML)
+        # Re-order trades based on globalTradeId
+        poloResults = {}
+        for pair in tradeHistory24h:
+            for e in tradeHistory24h[pair]:
+                e['pair'] = pair
+                e['timestamp'] = int(time.mktime(time.strptime(e['date'], "%Y-%m-%d %H:%M:%S")))
+                poloResults[int(e['globalTradeID'])] = e
 
-            if savedLen < len(printed):
-                savedLen = len(printed)
-                balance = testapi.returnBalances()
+        # Loop over most recent trades history
+        for gtid in sorted(poloResults.keys())[-latestTrades:]:
 
-                text_balance = 'No balance'
-                if balance != '':
-                    try:
-                        text_balance = 'Current available Poloniex BTC balance: ' + balance['BTC']
-                    except:
-                        pass
+            # TODO: get rid of this 'printed'
+            if gtid in printed:
+                continue
 
-                if want_console_output:
-                    print text_balance
+            # Remember that we already displayed this order
+            printed.add(gtid)
+            time.sleep(0.33)
 
-                bot.send_message(chat_id=TG_ID, text='<b>'+"POLONIEX: "+text_balance+'</b>', parse_mode=telegram.ParseMode.HTML)
+            if want_pictures:
+                if poloResults[gtid][2] == "BUY":
+                    bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/buy.png')
+                else:
+                    bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/sell.png')
 
+            # Construct strings
+            # POLONIEX: BTC_DASH 2017-07-20 18:25:15 SELL of 194.19281307 DASH at 0.07390809 with revenue of +0.00919869
+
+            coin = poloResults[gtid]['pair'].split('_')[1]
+            type = poloResults[gtid]['type'].upper()
+            botMessage = "<b>POLONIEX:</b> <b>%s</b> <b>%s</b> <b>%s</b> of %s <b>%s</b> at %s with %s of <b>%s%s</b>" % (
+                poloResults[gtid]['pair'],
+                poloResults[gtid]['date'],
+                type, poloResults[gtid]['amount'], coin,
+                poloResults[gtid]['rate'],
+                'investments' if type == 'BUY' else 'revenue',
+                '-' if type == 'BUY' else '+',
+                poloResults[gtid]['total'])
+
+            if set_debug:
+                print botMessage
+
+            if want_console_output:
+                print "POLONIEX: %-9s %s (%d) %-4s %s at %s (%s%s)" % (
+                    poloResults[gtid]['pair'], poloResults[gtid]['date'], poloResults[gtid]['timestamp'],
+                    type, poloResults[gtid]['amount'], poloResults[gtid]['rate'], '-' if type == 'BUY' else '+',
+                    poloResults[gtid]['total'])
+
+            # bot.send_message(chat_id=TG_ID, text=botMessage, parse_mode=telegram.ParseMode.HTML)
+
+        # We've displayed all recent trades
+        # Save the last trade timestamp for more efficient API calls.
+        # Poloniex search results are inclusive so add 1 sec to account for this.
+        mostRecentTimestamp = poloResults[max(printed)]['timestamp']+1
+
+        # Display balance
+        poloBalances = poloClient.returnBalances()
+
+        txtBalance = 'No Balance'
+        if 'BTC' in poloBalances:
+            txtBalance = 'Current available Poloniex BTC balance: ' + poloBalances['BTC']
+
+        if set_debug:
+            print "Balances: %s" % (json.dumps(poloBalances))
+
+        if want_console_output:
+            print txtBalance
+
+        # bot.send_message(chat_id=TG_ID, text="<b>POLONIEX: %s</b>" % (txtBalance), parse_mode=telegram.ParseMode.HTML)
+
+        # Sleep the while-loop
         time.sleep(pollingInterval)
 
+
 if __name__ == '__main__':
+
+    # Create the API client
+    poloClient = poloniex(pkey, spkey)
+
     try:
         worker()
     except KeyboardInterrupt:
