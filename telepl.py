@@ -13,14 +13,6 @@
 # Depends/installs
 # pip install python-telegram-bot --upgrade
 
-set_debug = False
-
-# If you don't want the 'BUY'/'SELL' images in your Telegram, set this to False
-want_pictures = False
-
-# If you don't want console/ssh output, set this to False
-want_console_output = False
-
 # Generate new API key/secret from Poloniex and put them here
 pkey = ''
 spkey = ''
@@ -33,10 +25,25 @@ TG_ID = ""
 # Put in the telegram bot token from @BotFather
 TG_BOT_TOKEN = ""
 
+# If you don't want the 'BUY'/'SELL' images in your Telegram, set this to False
+want_pictures = False
+
+# How frequently to poll for new trades
 pollingInterval = 5
+
+# How many of the most recent trades to display
 latestTrades = 10
 
-import threading
+# Change logging level. Options: 
+# DEBUG (most verbose, including JSON dumps), INFO, WARNING (Default)
+import logging
+logFile = "telepl.log"
+logLevel = logging.DEBUG
+
+# 
+# ## Should not need to change anything below here ##
+# 
+
 import os
 import ssl
 import telegram
@@ -103,10 +110,10 @@ class poloniex:
                 return json.loads(ret.read())
 
         except URLError as e:
-            print "Polo is lagging, or we've got some error: '%s', '%s'" % (e.message, e.reason)
+            logging.warning("Polo is lagging, or we've got some error: '%s', '%s'" % (e.message, e.reason))
             return ''
         except ssl.SSLError as e:
-            print "Internet is lagging, or we've got SSL error: '%s'" % (e.message)
+            logging.warning("Internet is lagging, or we've got SSL error: '%s'" % (e.message))
             return ''
 
     def returnTicker(self):
@@ -149,12 +156,10 @@ def getMostRecentTimestamp():
             if l > mrt:
                 mrt = l
 
-            if set_debug:
-                print "DEBUG: Read '%s' from TMP/telepl_last. Using '%d' as timestamp." % (t, mrt)
+            logging.debug("Read '%s' from TMP/telepl_last. Using '%d' as timestamp." % (t, mrt))
 
     except (IOError, ValueError):
-        if set_debug:
-            print "DEBUG: No /telepl_last file found or unable to parse contents."
+        logging.info("No /telepl_last file found or unable to parse contents. Continuing.")
 
     return mrt
 
@@ -169,13 +174,11 @@ def worker():
     while (True):
         tradeHistory = poloClient.returnTradeHistory('All', mostRecentTimestamp)
 
-        if set_debug:
-            print "TRADE24: %s" % (json.dumps(tradeHistory))
+        logging.debug("Trade History: %s" % (json.dumps(tradeHistory)))
 
         # If nothing new, sleep and loop
         if len(tradeHistory) == 0:
-            if want_console_output:
-                print "%s - No new trades since '%s'." % (time.strftime('%c'), time.strftime('%c', time.localtime(mostRecentTimestamp)))
+            logging.info("No new trades since '%s'." % (time.strftime('%c', time.localtime(mostRecentTimestamp))))
             time.sleep(pollingInterval)
             continue
 
@@ -187,8 +190,7 @@ def worker():
 
         # Some internal error within Poloniex. A string is returned.
         if 'error' in tradeHistory:
-            if set_debug:
-                print "DEBUG: Got Error '%s'" % (tradeHistory['error'])
+            logging.warning("Poloniex Error: '%s'" % (tradeHistory['error']))
             time.sleep(pollingInterval)
             continue;
 
@@ -226,14 +228,7 @@ def worker():
                 '-' if type == 'BUY' else '+',
                 poloResults[gtid]['total'])
 
-            if set_debug:
-                print botMessage
-
-            if want_console_output:
-                print "POLONIEX: %-9s %s (%d) %-4s %s at %s (%s%s)" % (
-                    poloResults[gtid]['pair'], poloResults[gtid]['date'], poloResults[gtid]['timestamp'],
-                    type, poloResults[gtid]['amount'], poloResults[gtid]['rate'], '-' if type == 'BUY' else '+',
-                    poloResults[gtid]['total'])
+            logging.info(botMessage)
 
             # Call Telegram bot API
             bot.send_message(chat_id=TG_ID, text=botMessage, parse_mode=telegram.ParseMode.HTML)
@@ -250,13 +245,11 @@ def worker():
         if 'BTC' in poloBalances:
             txtBalance = 'Current available Poloniex BTC balance: ' + poloBalances['BTC']
 
-        if set_debug:
-            print "Balances: %s" % (json.dumps(poloBalances))
+        logging.debug("Balances: %s" % (json.dumps(poloBalances)))
 
-        if want_console_output:
-            print txtBalance
-
-        bot.send_message(chat_id=TG_ID, text="<b>POLONIEX: %s</b>" % (txtBalance), parse_mode=telegram.ParseMode.HTML)
+        botMessage = "<b>POLONIEX: %s</b>" % (txtBalance)
+        logging.info(botMessage)
+        bot.send_message(chat_id=TG_ID, text=botMessage, parse_mode=telegram.ParseMode.HTML)
 
         # Write out latest trade timestamp for better restart
         with open(gettempdir() + "/telepl_last", "w") as f: 
@@ -268,8 +261,18 @@ def worker():
 
 if __name__ == '__main__':
 
+    # Setup logging
+    logging.basicConfig(filename=logFile, level=logLevel, format='%(asctime)s %(levelname)s: %(message)s')
+    logging.info("# Welcome to Telebot for Poloniex")
+
     # Create the API client
-    poloClient = poloniex(pkey, spkey)
+    try:
+        poloClient = poloniex(pkey, spkey)
+    except:
+        msg = "Unable to initialize Poloniex client. Check API key and secret for accuracy"
+        logging.critical(msg)
+        print msg
+        os._exit(1)
 
     try:
         worker()
