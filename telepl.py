@@ -1,9 +1,13 @@
-# A Telegram Bot for Poloniex Trades ##
+# A Telegram Bot for Poloniex Trades #
 #
 # If it worked for you, you use and like it = donate any amount you wish
-# BTC: 1HRjjHByNL2enV1eRR1RkN698tucecL6FA
-# ETH: 0x4e5e7b86baf1f8d6dfb8a242c85201c47fa86c74
-# ZEC: t1aKAm7qXi6fbGvAhbLioZm3Q8obb4e3BRo
+# @dyvosvit - Original author:
+#   BTC: 1HRjjHByNL2enV1eRR1RkN698tucecL6FA
+#   ETH: 0x4e5e7b86baf1f8d6dfb8a242c85201c47fa86c74
+#   ZEC: t1aKAm7qXi6fbGvAhbLioZm3Q8obb4e3BRo
+# @Krixt improvements:
+#   BTC: 1CdVfNqs2eH94hSnH2ZMCKdMFrTd44VHcY
+#   ETH: 0xF4738514F79736CEC609E437173a3d62bB9f7714
 #
 
 # Depends/installs
@@ -42,6 +46,7 @@ import hmac
 import hashlib
 import httplib
 import socket
+from tempfile import gettempdir
 
 timeout = 10
 socket.setdefaulttimeout(timeout)
@@ -129,21 +134,46 @@ class poloniex:
         return self.api_query('returnTradeHistory', params)
 
 
+def getMostRecentTimestamp():
+
+    # Default 24hrs ago
+    mrt = int(time.time() - 86400)
+
+    try:
+        with open(gettempdir() + "/telepl_last", "r") as f:
+            t = f.readline()
+
+            if t != "":
+                l = int(t)
+
+            if l > mrt:
+                mrt = l
+
+            if set_debug:
+                print "DEBUG: Read '%s' from TMP/telepl_last. Using '%d' as timestamp." % (t, mrt)
+
+    except (IOError, ValueError):
+        if set_debug:
+            print "DEBUG: No /telepl_last file found or unable to parse contents."
+
+    return mrt
+
+
 def worker():
     bot = telegram.Bot(token=TG_BOT_TOKEN)
-    printed = set()
 
-    # Start out with last 24hrs history
-    mostRecentTimestamp = int(time.time() - 86400)
+    # Start out with last 24hrs history or previously saved left-off point
+    mostRecentTimestamp = getMostRecentTimestamp()
 
+    # Main loop
     while (True):
-        tradeHistory24h = poloClient.returnTradeHistory('All', mostRecentTimestamp)
+        tradeHistory = poloClient.returnTradeHistory('All', mostRecentTimestamp)
 
         if set_debug:
-            print "TRADE24: %s" % (json.dumps(tradeHistory24h))
+            print "TRADE24: %s" % (json.dumps(tradeHistory))
 
         # If nothing new, sleep and loop
-        if len(tradeHistory24h) == 0:
+        if len(tradeHistory) == 0:
             if want_console_output:
                 print "%s - No new trades since '%s'." % (time.strftime('%c'), time.strftime('%c', time.localtime(mostRecentTimestamp)))
             time.sleep(pollingInterval)
@@ -156,8 +186,8 @@ def worker():
 
         # Re-order trades based on globalTradeId
         poloResults = {}
-        for pair in tradeHistory24h:
-            for e in tradeHistory24h[pair]:
+        for pair in tradeHistory:
+            for e in tradeHistory[pair]:
                 e['pair'] = pair
                 e['timestamp'] = int(time.mktime(time.strptime(e['date'], "%Y-%m-%d %H:%M:%S")))
                 poloResults[int(e['globalTradeID'])] = e
@@ -165,12 +195,7 @@ def worker():
         # Loop over most recent trades history
         for gtid in sorted(poloResults.keys())[-latestTrades:]:
 
-            # TODO: get rid of this 'printed'
-            if gtid in printed:
-                continue
-
-            # Remember that we already displayed this order
-            printed.add(gtid)
+            # Artifical sleep as to not pound the API
             time.sleep(0.33)
 
             if want_pictures:
@@ -205,11 +230,11 @@ def worker():
             # Call Telegram bot API
             bot.send_message(chat_id=TG_ID, text=botMessage, parse_mode=telegram.ParseMode.HTML)
 
-        # We've displayed all recent trades
-        # Save the last trade timestamp for more efficient API calls.
-        # Poloniex search results are inclusive so add 1 sec to account for this.
-        mostRecentTimestamp = poloResults[max(printed)]['timestamp']+1
+            # Save the last trade timestamp for more efficient API calls.
+            # Poloniex search results are inclusive so add 1 sec to account for this.
+            mostRecentTimestamp = poloResults[gtid]['timestamp']+1
 
+        # We've displayed all recent trades
         # Display balance
         poloBalances = poloClient.returnBalances()
 
@@ -224,6 +249,10 @@ def worker():
             print txtBalance
 
         bot.send_message(chat_id=TG_ID, text="<b>POLONIEX: %s</b>" % (txtBalance), parse_mode=telegram.ParseMode.HTML)
+
+        # Write out latest trade timestamp for better restart
+        with open(gettempdir() + "/telepl_last", "w") as f: 
+            f.write("%d" % (mostRecentTimestamp))
 
         # Sleep the while-loop
         time.sleep(pollingInterval)
