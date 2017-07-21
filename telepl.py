@@ -101,7 +101,7 @@ class poloniex:
             print "Polo is lagging, or we've got some error: '%s', '%s'" % (e.message, e.reason)
             return ''
         except ssl.SSLError as e:
-            print "Internet is lagging, or we've got SSL error: '%s', '%s'" % (e.message, e.reason)
+            print "Internet is lagging, or we've got SSL error: '%s'" % (e.message)
             return ''
 
     def returnTicker(self):
@@ -184,7 +184,7 @@ def worker():
 
             coin = poloResults[gtid]['pair'].split('_')[1]
             type = poloResults[gtid]['type'].upper()
-            botMessage = "<b>POLONIEX:</b> <b>%s</b> <b>%s</b> <b>%s</b> of %s <b>%s</b> at %s with %s of <b>%s%s</b>" % (
+            botMessage = "<b>POLONIEX:</b> <b>%s</b> %s <b>%s</b> of %s <b>%s</b> at %s with %s of <b>%s%s</b>" % (
                 poloResults[gtid]['pair'],
                 poloResults[gtid]['date'],
                 type, poloResults[gtid]['amount'], coin,
