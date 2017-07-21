@@ -180,9 +180,17 @@ def worker():
             continue
 
         # Sample JSON data
+        # {"error": "Connection timed out. Please try again."}
         # { "category": "exchange", "fee": "0.00250000", "tradeID": "860775", "orderNumber": "10510",
         #   "amount": "194.19281307", "rate": "0.00004444", "date": "2017-07-19 11:03:46",
         #   "total": "0.00862992", "type": "sell", "globalTradeID": 1942 }
+
+        # Some internal error within Poloniex. A string is returned.
+        if 'error' in tradeHistory:
+            if set_debug:
+                print "DEBUG: Got Error '%s'" % (tradeHistory['error'])
+            time.sleep(pollingInterval)
+            continue;
 
         # Re-order trades based on globalTradeId
         poloResults = {}
