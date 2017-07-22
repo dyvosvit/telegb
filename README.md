@@ -23,7 +23,7 @@ python get-pip.py
 
 2. install python-telegram-bot
 
-pip install python-telegram-bot --upgrade
+c:\python27 -m pip install python-telegram-bot --upgrade
 
 
 HOWTO ACTIVATE THIS BOT:
@@ -86,8 +86,8 @@ python get-pip.py
 2. Установить модуль python-telegram-bot
 
 pip install python-telegram-bot --upgrade
-либо
-python -m pip install python-telegram-bot
+либо(windows)
+c:\python27\python -m pip install python-telegram-bot
 
 Как автивировать Бота для телеграмма:
 
