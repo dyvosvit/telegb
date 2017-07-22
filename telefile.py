@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 i_want_to_see_the_result_in_console = True
 #depends/installs
-# pip install python-telegram-bot --upgrade
+# pip install python-telegram-bot
 
 # put in your telegram chat id from @get_id_bot
 TG_ID = ""
@@ -16,8 +16,8 @@ TG_ID = ""
 # put in the telegram bot token from @BotFather
 TG_BOT_TOKEN = ""
 
-#interval to poll
-pollingInterval = 10
+#interval to poll in seconds
+pollingInterval = 3600
 #name the file
 file_to_read_every_interval='testfile.txt'
 #init your TG BOT
