@@ -43,6 +43,7 @@ then type in chat your bot's name (for ex. @gb-to-telegram)
 Send any message to your bot then retrieve the update with:
 
 https://api.telegram.org/bot<TG_BOT_ID>/getUpdates
+
 ^^ without <>
 
 In the json string returned you will find you chat_id/user_id.
