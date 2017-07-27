@@ -40,9 +40,19 @@ answer the questions by typing answers and pressing enter
 
 then type in chat your bot's name (for ex. @gb-to-telegram)
 
-and press start button
+Send any message to your bot then retrieve the update with:
 
-Change "TG_ID" to your telegram chat id (to find it out send command "/my_id" to telegram user @get_id_bot)
+https://api.telegram.org/bot<TG_BOT_ID>/getUpdates
+^^ without <>
+
+In the json string returned you will find you chat_id/user_id.
+In single chat with the bot chat_id is equal to user_id.
+
+a bit complicated
+
+but that bot-group @get_id_bot .... seems to not work anymore
+
+Change "TG_ID" to your telegram chat user_id
 
 RUN:
 
