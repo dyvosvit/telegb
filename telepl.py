@@ -102,11 +102,11 @@ class poloniex:
                 return json.loads(ret.read())
             else:
                 req['command'] = command
-                req['nonce'] = int(time.time()*1000)
+                req['nonce'] = int(time.time() * 1000)
                 post_data = urlencode(req)
 
                 sign = hmac.new(self.Secret, post_data, hashlib.sha512).hexdigest()
-                headers = { 'Sign': sign, 'Key': self.APIKey }
+                headers = {'Sign': sign, 'Key': self.APIKey}
 
                 # For deep debugging
                 # req = urllib2.Request('https://www.poloniex.com/tradingApi', post_data, headers)
@@ -117,6 +117,9 @@ class poloniex:
 
                 return json.loads(ret.read())
 
+        except HTTPError as e:
+            logging.warning("HTTP Error: %d '%s'" % (e.code, e.reason))
+            return ''
         except URLError as e:
             logging.warning("Polo is lagging, or we've got some error: '%s', '%s'" % (e.message, e.reason))
             return ''
@@ -236,7 +239,7 @@ def worker():
         if 'error' in tradeHistory:
             logging.warning("Poloniex Error: '%s'" % (tradeHistory['error']))
             time.sleep(pollingInterval)
-            continue;
+            continue
 
         # Re-order trades based on globalTradeId
         poloResults = {}
