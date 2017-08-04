@@ -34,15 +34,23 @@ pollingInterval = 5
 # How many of the most recent trades to display
 latestTrades = 10
 
-# Change logging level. Options: 
+# Which coin balances to display; supports all coins
+coinBalancesToShow = ['BTC', 'USDT', 'ETH']
+
+# How often, additionally, in pollingIntervals, to show balances?
+# Balances will always be shown after BUY/SELL regardless of this setting.
+# 0 = disabled; Ex: balancesInterval=60 and pollingInterval=5 means show balances every 300s/5m
+balancesInterval = 0
+
+# Change logging level. Options:
 # DEBUG (most verbose, including JSON dumps), INFO, WARNING (Default)
 import logging
 logFile = "telepl.log"
 logLevel = logging.DEBUG
 
-# 
+#
 # ## Should not need to change anything below here ##
-# 
+#
 
 import os
 import ssl
@@ -165,20 +173,56 @@ def getMostRecentTimestamp():
 
 
 def worker():
+
+    # Initialize the Telegram BOT
     bot = telegram.Bot(token=TG_BOT_TOKEN)
+
+    # For counting intervals
+    numIntervals = 0
 
     # Start out with last 24hrs history or previously saved left-off point
     mostRecentTimestamp = getMostRecentTimestamp()
 
+    # So we can call this as a helper
+    def displayBalances():
+
+        # Display balance
+        poloBalances = poloClient.returnBalances()
+        logging.debug("JSON DUMP Balances: %s" % (json.dumps(poloBalances)))
+
+        txtBalance = ''
+        for k in coinBalancesToShow:
+            if k in poloBalances:
+                txtBalance += "%s: %s | " % (k, poloBalances[k])
+
+        if len(txtBalance) == 0:
+            txtBalance = '(Not Available)'
+
+        botMessage = "<b>POLONIEX: Current Poloniex Balances: %s</b>" % (txtBalance)
+
+        logging.info(botMessage)
+        bot.send_message(chat_id=TG_ID, text=botMessage, parse_mode=telegram.ParseMode.HTML)
+
     # Main loop
     while (True):
-        tradeHistory = poloClient.returnTradeHistory('All', mostRecentTimestamp)
 
+        # Get the history from Polo
+        tradeHistory = poloClient.returnTradeHistory('All', mostRecentTimestamp)
         logging.debug("Trade History: %s" % (json.dumps(tradeHistory)))
+
+        # For interval printing
+        if balancesInterval > 0:
+            numIntervals += 1
 
         # If nothing new, sleep and loop
         if len(tradeHistory) == 0:
+
             logging.info("No new trades since '%s'." % (time.strftime('%c', time.localtime(mostRecentTimestamp))))
+
+            if numIntervals > balancesInterval:
+                displayBalances()
+                numIntervals = 0
+
             time.sleep(pollingInterval)
             continue
 
@@ -235,24 +279,13 @@ def worker():
 
             # Save the last trade timestamp for more efficient API calls.
             # Poloniex search results are inclusive so add 1 sec to account for this.
-            mostRecentTimestamp = poloResults[gtid]['timestamp']+1
+            mostRecentTimestamp = poloResults[gtid]['timestamp'] + 1
 
-        # We've displayed all recent trades
-        # Display balance
-        poloBalances = poloClient.returnBalances()
-
-        txtBalance = 'No Balance'
-        if 'BTC' in poloBalances:
-            txtBalance = 'Current available Poloniex BTC balance: ' + poloBalances['BTC']
-
-        logging.debug("Balances: %s" % (json.dumps(poloBalances)))
-
-        botMessage = "<b>POLONIEX: %s</b>" % (txtBalance)
-        logging.info(botMessage)
-        bot.send_message(chat_id=TG_ID, text=botMessage, parse_mode=telegram.ParseMode.HTML)
+        # Always show balances after BUY/SELL
+        displayBalances()
 
         # Write out latest trade timestamp for better restart
-        with open(gettempdir() + "/telepl_last", "w") as f: 
+        with open(gettempdir() + "/telepl_last", "w") as f:
             f.write("%d" % (mostRecentTimestamp))
 
         # Sleep the while-loop
