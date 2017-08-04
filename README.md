@@ -47,11 +47,15 @@ _telebt.py_ is for Bittrex
 
 ### Optional
 
-In the script there are 3 settings you can turn on/off to suit your desires:
+In the script there are several settings you can tune to suit your desires:
 
-    want_console_output = True (or False)    // Displays same output to console/SSH as to bot
-    want_pictures = True (or False)          // Displays 'BUY' and 'SELL' text images in bot chat
-    set_debug = False (or True)              // Displays last 24 hours trades on console/SSH
+    want_pictures = True (or False)       // Displays 'BUY' and 'SELL' text images in bot chat
+    pollingInterval = 5                   // How many seconds to sleep between queries
+    latestTrades = 10                     // How many of the most recent trades to display per interval
+    coinBalancesToShow = ['BTC', 'USDT']  // Show or not show other coin balances
+    balancesInterval = 0                  // Display coin balances after this many intervals
+    logFile = "telepl.log"                // All logging happens in this file; appends on restart
+    logLevel = logging.WARNING            // INFO, WARNING, DEBUG
 
 ## RUNING THE BOT:
 
