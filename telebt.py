@@ -79,7 +79,10 @@ class Bittrex(object):
         headers = {"apisign": signature}
 
         ret = requests.get(request_url, headers=headers)
-        return ret.json()
+        if ret != '':
+            return ret.json()
+        else:
+            return {}
 
     def get_markets(self):
         return self.api_query('getmarkets')
