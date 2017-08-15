@@ -75,6 +75,7 @@ I welcome ideas, additions ....
 
 Telegram: @Dyvosvit / @krixtr
 
+---
 
 Телеграмм бот для отслеживания торгов на Poloniex или Bittrex.
 
