@@ -67,30 +67,13 @@ In the script there are several settings you can tune to suit your desires:
 
     python telebt.py
 
-## UPDATE: For GunBot Community proxy users:
-
-    apt-get install tmux
-    tmux new-session
-
-    echo "127.0.0.1 localhost" >./my_hosts
-    echo "104.20.12.48 poloniex.com" >>./my_hosts
-
-    sudo unshare -m bash -c "mount ./my_hosts /etc/hosts --bind; bash"
-
-    cat /etc/hosts
-
-After you do the above commands, you can run the bot as above.
-
-
-
 If it worked for you, you use and like it = donate any amount you wish
 
 #BTC: 1HRjjHByNL2enV1eRR1RkN698tucecL6FA
 
 I welcome ideas, additions ....
 
-My telegram is @Dyvosvit
-
+Telegram: @Dyvosvit / @krixtr
 
 
 Телеграмм бот для отслеживания торгов на Poloniex или Bittrex.
