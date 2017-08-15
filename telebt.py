@@ -179,10 +179,10 @@ def pollBittrexTrades():
         #print len(resultMarkets)
         for i in resultMarkets['result'][:latestTrades]:
             date=i['TimeStamp'].replace('T',' ').split('.')[0]
-            dt = datetime.datetime.strptime(i['TimeStamp'], '%Y-%m-%dT%H:%M:%S.%f')
-            utc_time = time.mktime(dt.timetuple())
+            #dt = datetime.datetime.strptime(i['TimeStamp'], '%Y-%m-%dT%H:%M:%S.%f')
+            #utc_time = time.mktime(dt.timetuple())
             #print(str(utc_time).split('.')[0])
-            text_out[str(utc_time).split('.')[0]]=[i['Exchange'], date,
+            text_out[date]=[i['Exchange'], date,
                                       i['OrderType'][6:],str(i['Quantity']),'of',i['Exchange'][4:],
                                       'at',f(i['PricePerUnit'],0,''),'resulting',
                                       '-'+str(i['Price']) if i['OrderType'][6:] == 'BUY' else '+'+str(i['Price'])]
