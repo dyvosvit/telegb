@@ -78,7 +78,12 @@ class Bittrex(object):
 
         headers = {"apisign": signature}
 
-        ret = requests.get(request_url, headers=headers)
+        try:
+            ret = requests.get(request_url, headers=headers)
+        except requests.exceptions.RequestException as e:  # This is the correct syntax
+            print e
+            return {}
+
         if ret != '':
             return ret.json()
         else:
