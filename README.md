@@ -69,7 +69,7 @@ In the script there are several settings you can tune to suit your desires:
 
 If it worked for you, you use and like it = donate any amount you wish
 
-#BTC: 1HRjjHByNL2enV1eRR1RkN698tucecL6FA
+#BTC: 1hHa79zoc4REFWFHwMCRQgW7fYPXJHbpf
 
 I welcome ideas, additions ....
 
@@ -137,7 +137,7 @@ python telebt.py
 
 так вот если мой бот у вас работет, вы им пользуетесь = пожертвуйте любую сумму, которую вы хотите
 
-#BTC: 1HRjjHByNL2enV1eRR1RkN698tucecL6FA
+#BTC: 1hHa79zoc4REFWFHwMCRQgW7fYPXJHbpf
 
 Я приветствую Ваши идеи, дополнения ...
 
