@@ -2,9 +2,8 @@
 #
 # If it worked for you, you use and like it = donate any amount you wish
 # @dyvosvit - Original author:
-#   BTC: 1HRjjHByNL2enV1eRR1RkN698tucecL6FA
+#   BTC: 1hHa79zoc4REFWFHwMCRQgW7fYPXJHbpf
 #   ETH: 0x4e5e7b86baf1f8d6dfb8a242c85201c47fa86c74
-#   ZEC: t1aKAm7qXi6fbGvAhbLioZm3Q8obb4e3BRo
 # @Krixt improvements:
 #   BTC: 1CdVfNqs2eH94hSnH2ZMCKdMFrTd44VHcY
 #   ETH: 0xF4738514F79736CEC609E437173a3d62bB9f7714
