@@ -255,7 +255,7 @@ def worker():
             time.sleep(0.33)
 
             if want_pictures:
-                if poloResults[gtid][2] == "BUY":
+                if poloResults[gtid]['type'].upper() == "BUY":
                     bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/buy.png')
                 else:
                     bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/sell.png')
