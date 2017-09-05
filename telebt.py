@@ -3,23 +3,8 @@
 # ETH: 0x4e5e7b86baf1f8d6dfb8a242c85201c47fa86c74
 
 set_debug = False
-
-import imp, sys, pip, time, thread, traceback
-
-def install(package):
-    pip.main(["install", package])
-
-try:
-    imp.find_module("python-telegram-bot")
-except ImportError:
-    print "The 'python-telegram-bot' package is not installed. Attempting to install..."
-    install("python-telegram-bot")
-
-try:
-    imp.find_module("requests")
-except ImportError:
-    print "The 'requests' package is not installed. Attempting to install..."
-    install("requests")
+# depends/installs
+# pip install python-telegram-bot --upgrade
 
 #generate new API key/secret from Bittrex and put them here
 bkey = ""
@@ -30,7 +15,6 @@ latestTrades = 10
 TG_ID = ""
 # put in the telegram bot token from @BotFather
 TG_BOT_TOKEN = ""
-
 import threading
 import os
 # import ssl
@@ -99,11 +83,14 @@ class Bittrex(object):
             ret = requests.get(request_url, headers=headers)
         except requests.exceptions.RequestException as e:  # This is the correct syntax
             print e
-            return {'success':False}
+            return {}
+#        print dir(ret)
         if ret.ok:
             return ret.json()
         else:
             return {'success':False}
+
+#       print ret.text, ret.ok, ret.reason, ret.status_code
 
     def get_markets(self):
         return self.api_query('getmarkets')
@@ -218,10 +205,10 @@ while (True):
         if key not in printed.keys():
             printed[key] = True
             time.sleep(0.33)
-            if pollResult[key][2] == "BUY":
-                bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/buy.png')
-            else:
-                bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/sell.png')
+#            if pollResult[key][2] == "BUY":
+#                bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/buy.png')
+#            else:
+#                bot.send_photo(chat_id=TG_ID, photo='https://raw.githubusercontent.com/dyvosvit/telegb/master/sell.png')
             pollResult[key][2] = '<b>' + pollResult[key][2] + '</b>'
             pollResult[key][5] = '<b>' + pollResult[key][5] + '</b>'
             pollResult[key][9] = '<b>' + pollResult[key][9] + '</b>'
@@ -244,10 +231,10 @@ while (True):
         time.sleep(0.3)
         # print resultTicker['result']
         estimValueCurrent = calculateEstimatedBTCs(balance['result']['Available'])
-        text_estimated = 'Current estimated value of portfolio in BTCs (lastprice):{:+.14f}'.format(
+        text_estimated = ', estimated value of portfolio:{:+.14f}'.format(
             float(estimValueCurrent))
         print text_estimated
-        bot.send_message(chat_id=TG_ID, text='<b>' + text_balance + '</b>', parse_mode=telegram.ParseMode.HTML)
-        bot.send_message(chat_id=TG_ID, text='<b>' + text_estimated + '</b>', parse_mode=telegram.ParseMode.HTML)
+        bot.send_message(chat_id=TG_ID, text='<b>' + text_balance + '</b>'+'<b> ' + text_estimated + '</b>', parse_mode=telegram.ParseMode.HTML)
+#        bot.send_message(chat_id=TG_ID, text=, parse_mode=telegram.ParseMode.HTML)
     #print 'wait 1 sec'
     time.sleep(pollingInterval)
