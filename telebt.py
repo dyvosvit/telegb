@@ -16,6 +16,10 @@ TG_ID = ""
 # put in the telegram bot token from @BotFather
 TG_BOT_TOKEN = ""
 
+import imp, pip
+def install(package):
+	pip.main(["install", package])
+	
 depends = ['requests', 'python-telegram-bot']
 for i in depends:
 	try:
