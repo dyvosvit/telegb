@@ -50,7 +50,18 @@ logLevel = logging.DEBUG
 #
 # ## Should not need to change anything below here ##
 #
-
+import imp, pip
+def install(package):
+	pip.main(["install", package])
+	
+depends = ['requests', 'python-telegram-bot']
+for i in depends:
+	try:
+		imp.find_module(i)
+	except ImportError:
+		print "The '"+i+"' package is not installed. Attempting to install..."
+		install(i)
+        
 import os
 import ssl
 import telegram
