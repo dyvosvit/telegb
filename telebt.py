@@ -15,6 +15,16 @@ latestTrades = 10
 TG_ID = ""
 # put in the telegram bot token from @BotFather
 TG_BOT_TOKEN = ""
+
+depends = ['requests', 'python-telegram-bot']
+for i in depends:
+	try:
+		imp.find_module(i)
+	except ImportError:
+		print "The '"+i+"' package is not installed. Attempting to install..."
+		install(i)
+
+
 import threading
 import os
 # import ssl
