@@ -142,6 +142,9 @@ class Bittrex(object):
     def get_open_orders(self, market):
         return self.api_query('getopenorders', {'market': market})
 
+    def get_open_orders(self):
+        return self.api_query('getopenorders')
+
     def get_balances(self):
        return self.api_query('getbalances', {})
 
