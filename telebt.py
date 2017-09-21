@@ -255,7 +255,7 @@ while (True):
         # print resultTicker['result']
         estimValueCurrent = calculateEstimatedBTCs(balance['result']['Available'])
         text_estimated = ', so ... estimated value of portfolio is:{:+.14f}'.format(
-            float(estimValueCurrent))
+            float(estimValueCurrent)+onOrders)
         print text_estimated
         bot.send_message(chat_id=TG_ID, text='<b>' + text_balance + '</b>'+'<b> ' + text_estimated + '</b>', parse_mode=telegram.ParseMode.HTML)
 #        bot.send_message(chat_id=TG_ID, text=, parse_mode=telegram.ParseMode.HTML)
