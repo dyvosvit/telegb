@@ -208,7 +208,7 @@ def pollBittrexTrades():
             text_out[date]=[i['Exchange'], date,
                                       i['OrderType'][6:],str(i['Quantity']),'of',i['Exchange'][4:],
                                       'at',f(i['PricePerUnit'],0,''),'resulting',
-                                      '-'+str(i['Price']) if i['OrderType'][6:] == 'BUY' else '+'+str(i['Price'])]
+                                      '-'+str(i['Price']+i['Commission']) if i['OrderType'][6:] == 'BUY' else '+'+str(i['Price']-i['Commission'])]
     return text_out
 
 bot = telegram.Bot(token=TG_BOT_TOKEN)
