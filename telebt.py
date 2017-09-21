@@ -240,6 +240,9 @@ while (True):
         balance = testapi.get_balance('BTC')
         if balance['success'] == True:
             text_balance = text_balance + '{:+.14f}'.format(float(balance['result']['Available']))
+            onOrders = 	float(balance['result']['Balance'])-float(balance['result']['Available'])
+            if onOrders>0:
+                text_balance += 'and {:+.14f} of BTCs are on opened orders'.format(onOrders)
         else:
             text_balance = text_balance + ' ... some error occured ...'
         print text_balance
