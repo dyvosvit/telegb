@@ -242,7 +242,7 @@ while (True):
             text_balance = text_balance + '{:+.14f}'.format(float(balance['result']['Available']))
             onOrders = 	float(balance['result']['Balance'])-float(balance['result']['Available'])
             if onOrders>0:
-                text_balance += 'and {:+.14f} of BTCs are on opened orders'.format(onOrders)
+                text_balance += ', and {:+.14f} of BTCs are on opened orders'.format(onOrders)
         else:
             text_balance = text_balance + ' ... some error occured ...'
         print text_balance
@@ -254,7 +254,7 @@ while (True):
         time.sleep(0.3)
         # print resultTicker['result']
         estimValueCurrent = calculateEstimatedBTCs(balance['result']['Available'])
-        text_estimated = ', estimated value of portfolio:{:+.14f}'.format(
+        text_estimated = ', so ... estimated value of portfolio is:{:+.14f}'.format(
             float(estimValueCurrent))
         print text_estimated
         bot.send_message(chat_id=TG_ID, text='<b>' + text_balance + '</b>'+'<b> ' + text_estimated + '</b>', parse_mode=telegram.ParseMode.HTML)
